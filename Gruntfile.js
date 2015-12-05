@@ -33,6 +33,7 @@ module.exports = function(grunt) {
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'jquery.min.js') ,
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'agamajs.0.0.2.standalone.min.js') ,
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'ie-emulation-modes-warning.js'),
+                  path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'ie8-responsive-file-warning.js'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'ie10-viewport-bug-workaround.js'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>', 'ie10-viewport-bug-workaround.css'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>', 'bootstrap.min.css'),
@@ -49,6 +50,7 @@ module.exports = function(grunt) {
                    './node_modules/jquery/dist/jquery.min.js',
                    './assets/js/ie10-viewport-bug-workaround.js' ,
                    './assets/js/ie-emulation-modes-warning.js',
+                   './assets/js/ie8-responsive-file-warning.js',
                    '../agamajs/dist/agama.0.0.2.standalone.min.js'],
             dest: path.join('<%= projectparams.dist_dir %>', '<%= projectparams.js_dir%>/'),
             flatten: true,
@@ -107,7 +109,9 @@ module.exports = function(grunt) {
                 'name': '<%= pkg.name %>',
                 'ie10-viewport-bug-workaround.js': path.join('<%= projectparams.js_dir %>', 'ie10-viewport-bug-workaround.js'),
                 'ie10-viewport-bug-workaround.css': path.join('<%= projectparams.css_dir %>', 'ie10-viewport-bug-workaround.css'),
-                'ie-emulation-modes-warning.js': path.join('<%= projectparams.js_dir %>', 'ie-emulation-modes-warning.js')
+                'ie-emulation-modes-warning.js': path.join('<%= projectparams.js_dir %>', 'ie-emulation-modes-warning.js'),
+                'ie8-responsive-file-warning.js': path.join('<%= projectparams.js_dir %>', 'ie8-responsive-file-warning.js'),
+                'agama.standalone.min.js': path.join('<%= projectparams.js_dir %>', 'agama.0.0.2.standalone.min.js')
               }
             }
           ]
