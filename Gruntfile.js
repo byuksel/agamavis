@@ -29,16 +29,24 @@ module.exports = function(grunt) {
       banner_for_production: '/*! <%= pkg.name %>.<%= pkg.version %>.<%= grunt.template.today("h:MM:ss yyyy-mm-dd") %> */\n'
     },
     clean: {
-      external: [ path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'bootstrap.min.js'),
+      external: [ path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'backbone-min.js'),
+                  path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'backbone-min.map'),
+                  path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'bootstrap.min.js'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'jquery.min.js') ,
+                  path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'jquery.min.map') ,
+                  path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'underscore-min.js') ,
+                  path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'underscore-min.map') ,
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'agamajs.0.0.2.standalone.min.js') ,
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'ie-emulation-modes-warning.js'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'ie8-responsive-file-warning.js'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'ie10-viewport-bug-workaround.js'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>', 'ie10-viewport-bug-workaround.css'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>', 'bootstrap.min.css'),
+                  path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>', 'bootstrap.min.css.map'),
                   path.join('<%= projectparams.dist_dir %>', '<%= projectparams.fonts_dir %>', '/glyphicons-halflings-*')
-      ]
+                ],
+      internal : [ path.join('<%= projectparams.dist_dir %>', 'index.html'),
+                   path.join('<%= projectparams.dist_dir %>', '*.js') ]
     },
     copy: {
       main: {
@@ -46,21 +54,32 @@ module.exports = function(grunt) {
           timestamp: true
         },
         files: [
-          { src: [ './node_modules/bootstrap/dist/js/bootstrap.min.js',
+          { src: path.join('<%= projectparams.src_dir %>', '**/*.js'),
+            dest: '<%= projectparams.dist_dir %>',
+            flatten: true,
+            expand: true
+          }, {
+            src: [ './node_modules/backbone/backbone-min.js',
+                   './node_modules/backbone/backbone-min.map',
+                   './node_modules/bootstrap/dist/js/bootstrap.min.js',
                    './node_modules/jquery/dist/jquery.min.js',
+                   './node_modules/jquery/dist/jquery.min.map',
+                   './node_modules/underscore/underscore-min.js',
+                   './node_modules/underscore/underscore-min.map',
                    './assets/js/ie10-viewport-bug-workaround.js' ,
                    './assets/js/ie-emulation-modes-warning.js',
                    './assets/js/ie8-responsive-file-warning.js',
                    '../agamajs/dist/agama.0.0.2.standalone.min.js'],
             dest: path.join('<%= projectparams.dist_dir %>', '<%= projectparams.js_dir%>/'),
             flatten: true,
-            expand: true },
-          { src: [ './node_modules/bootstrap/dist/css/bootstrap.min.css',
-                   './assets/css/ie10-viewport-bug-workaround.css' ],
-            dest:  path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>'),
-            flatten: true,
-            expand: true },
-          { src:'./node_modules/bootstrap/dist/fonts/*',
+            expand: true }, {
+              src: [ './node_modules/bootstrap/dist/css/bootstrap.min.css',
+                     './node_modules/bootstrap/dist/css/bootstrap.min.css.map',
+                     './assets/css/ie10-viewport-bug-workaround.css' ],
+              dest:  path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>'),
+              flatten: true,
+              expand: true },
+           { src:'./node_modules/bootstrap/dist/fonts/*',
             dest: path.join('<%= projectparams.dist_dir %>', './fonts/'),
             expand:true },
         ]
@@ -101,7 +120,9 @@ module.exports = function(grunt) {
           patterns: [
             {
               json: {
+                'backbone.min.js': path.join('<%= projectparams.js_dir %>', 'backbone-min.js'),
                 'jquery.min.js': path.join('<%= projectparams.js_dir %>', 'jquery.min.js'),
+                'underscore.min.js': path.join('<%= projectparams.js_dir %>', 'underscore-min.js'),
                 'bootstrap.min.js': path.join('<%= projectparams.js_dir %>', 'bootstrap.min.js'),
                 'bootstrap.min.css': path.join('<%= projectparams.css_dir %>', 'bootstrap.min.css'),
                 'author': '<%= pkg.author.name %>',
