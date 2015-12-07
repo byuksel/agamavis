@@ -30,3 +30,20 @@ models.Person = Backbone.Model.extend({
 models.People = Backbone.Collection.extend({
   model: models.Person
 });
+
+
+
+models.Editor = Backbone.Model.extend({
+  StateEnum : {
+    NOTHING: 0,
+    DRAWALINE_FIRSTPOINT: 1,
+    DRAWALINE_SECONDPOINT: 2,
+    ADD_SQUARE_TEMPLATE: 3,
+    ADD_HEX_TEMPLATE: 4
+  },
+  defaults: {
+    state: null
+  },
+  initialize: function() {
+  }
+});

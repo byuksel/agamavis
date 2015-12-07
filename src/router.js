@@ -8,6 +8,16 @@ var Router = Backbone.Router.extend({
   },
 
   index: function() {
+    // EditorModel keeps the state of the editor screen.
+    this.editorModel = new models.Editor();
+    // Buttons view controls buttons and updates editor model.
+    this.buttonsView = new views.ButtonsView({ el: $('#buttons'), model: this.editorModel });
+    // Editor view listens to changes in the editor view.
+    this.edView = new views.EditorView({model: this.editorModel});
+
+
+
+
     // Initialize a list of people
     // In this case we provide an array, but normally you'd
     // instantiate an empty list and call people.fetch()
@@ -41,10 +51,9 @@ var Router = Backbone.Router.extend({
   }
 });
 
+var router = new Router();
 jQuery(document).ready(function() {
   // When the document is ready we instantiate the router
-  var router = new Router();
-
   // And tell Backbone to start routing
   Backbone.history.start();
 });

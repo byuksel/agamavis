@@ -152,7 +152,6 @@ module.exports = function(grunt) {
         tasks: ['copy', 'replace']
       }
     }
-
   });
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
