@@ -47,6 +47,14 @@ views.ButtonsView = Backbone.View.extend({
 
 });
 
+
+views.HistoryView = Backbone.View.extend({
+  initialize: function() {
+  },
+  render: function() {
+  }
+});
+
 views.EditorView = Backbone.View.extend({
   el: '#outgraph',
   paper: null,
@@ -105,7 +113,7 @@ views.EditorView = Backbone.View.extend({
   // ...
 });
 
-views.PeopleItem = Backbone.View.extend({
+views.ActionItemView = Backbone.View.extend({
   // Each person will be shown as a table row
   tagName: 'tr',
 
@@ -122,19 +130,18 @@ views.PeopleItem = Backbone.View.extend({
     jQuery(this.el).empty();
 
     // Write the table columns
-    jQuery(this.el).append(jQuery('<td>' + this.model.get('firstname') + '</td>'));
-    jQuery(this.el).append(jQuery('<td>' + this.model.get('lastname') + '</td>'));
+    jQuery(this.el).append(jQuery('<td>' + this.model.get('actionTag') + '</td>'));
 
     return this;
   }
 });
 
-views.People = Backbone.View.extend({
+views.ActionList = Backbone.View.extend({
   // The collection will be kept here
   collection: null,
 
   // The people list view is attached to the table body
-  el: 'tbody',
+  el: 'table',
 
   initialize: function(options) {
     this.collection = options.collection;
@@ -149,23 +156,25 @@ views.People = Backbone.View.extend({
   },
 
   render: function() {
-    var element = jQuery(this.el);
+    var element = this.$el;
     // Clear potential old entries first
-    element.empty();
+    this.$el.empty();
 
     // Go through the collection items
     this.collection.forEach(function(item) {
 
       // Instantiate a PeopleItem view for each
-      var itemView = new views.PeopleItem({
+      var itemView = new views.ActionItemView({
         model: item
       });
 
-      // Render the PeopleView, and append its element
+      // Render the ActionListView, and append its element
       // to the table
       element.append(itemView.render().el);
     });
-
+    element.css('overflow', 'hidden');
+    element.scrollTop(100000);
+    element.css('overflow', 'auto');
     return this;
   }
 });

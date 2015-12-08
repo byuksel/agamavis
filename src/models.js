@@ -7,32 +7,6 @@
 // to ensure the data is correct.
 var models = {};
 
-// Our base model is "person"
-models.Person = Backbone.Model.extend({
-
-  // Example of how to do a validation in a model
-  validate: function(attributes) {
-    if (typeof attributes.firstname !== 'string') {
-      // Return a failed validation
-      return 'Firstname is mandatory';
-    }
-    if (typeof attributes.lastname !== 'string') {
-      // Return a failed validation
-      return 'Lastname is mandatory';
-    }
-    return '';
-    // All validations passed, don't return anything
-  }
-
-});
-
-// People collection
-models.People = Backbone.Collection.extend({
-  model: models.Person
-});
-
-
-
 models.Editor = Backbone.Model.extend({
   StateEnum : {
     NOTHING: 0,
@@ -46,4 +20,24 @@ models.Editor = Backbone.Model.extend({
   },
   initialize: function() {
   }
+});
+
+models.ActionItem = Backbone.Model.extend({
+  defaults: {
+    actionTag: ''
+  },
+  initialize: function() {
+  },
+  validate: function(attributes) {
+    if (typeof attributes.actionTag !== 'string') {
+      // Return a failed validation
+      return 'Firstname is mandatory';
+    }
+    // All validations passed, don't return anything
+  }
+});
+
+// Action Collection
+models.ActionCollection = Backbone.Collection.extend({
+  model: models.ActionItem
 });

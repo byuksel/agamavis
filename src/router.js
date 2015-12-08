@@ -15,25 +15,22 @@ var Router = Backbone.Router.extend({
     // Editor view listens to changes in the editor view.
     this.edView = new views.EditorView({model: this.editorModel});
 
-
+    // Keep track of our actions
+    this.historyView = new views.HistoryView({collection: this.actionList});
 
 
     // Initialize a list of people
     // In this case we provide an array, but normally you'd
     // instantiate an empty list and call people.fetch()
     // to get the data from your backend
-    var people = new models.People([
-      {firstname: 'Arthur',
-       lastname: 'Dent'
-      },{
-        firstname: 'Ford',
-        lastname: 'Prefect'
-      }
+    this.people = new models.ActionCollection([
+      { actionTag: 'Arthur' },{ actionTag: 'Ford' }
     ]);
 
     // Pass the collection of people to the view
-    var view = new views.People({
-      collection: people
+    var view = new views.ActionList({
+      collection: this.people,
+      el: $('#history tbody')
     });
 
     // And render it
@@ -42,10 +39,9 @@ var Router = Backbone.Router.extend({
     // Example of adding a new person afterwards
     // This will fire the 'add' event in the collection
     // which causes the view to re-render
-    people.add([
+    this.people.add([
       {
-        firstname: 'Zaphod',
-        lastname: 'Beeblebrox'
+        actionTag: 'Zaphod'
       }
     ]);
   }

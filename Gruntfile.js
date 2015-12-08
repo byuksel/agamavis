@@ -147,7 +147,8 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: [ path.join('<%= projectparams.src_dir %>', '/**/*.js'),
+        files: [ path.join('<%= projectparams.src_dir %>', '/**/*.css'),
+                 path.join('<%= projectparams.src_dir %>', '/**/*.js'),
                  path.join('<%= projectparams.src_dir %>', '/**/*.html') ],
         tasks: ['copy', 'replace']
       }
