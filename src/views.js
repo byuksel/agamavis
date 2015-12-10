@@ -47,14 +47,6 @@ views.ButtonsView = Backbone.View.extend({
 
 });
 
-
-views.HistoryView = Backbone.View.extend({
-  initialize: function() {
-  },
-  render: function() {
-  }
-});
-
 views.EditorView = Backbone.View.extend({
   el: '#outgraph',
   paper: null,
@@ -62,7 +54,11 @@ views.EditorView = Backbone.View.extend({
   events: {
     'click': 'clickMe'
   },
-  initialize: function() {
+  changed: function() {
+    console.log('changed');
+  },
+  initialize: function(options) {
+    this.options = options;
     this.StateEnum = this.model.StateEnum;
     this.listenTo(this.model, 'change', this.modelChanged);
     console.log('init on editorview');
@@ -90,12 +86,24 @@ views.EditorView = Backbone.View.extend({
   },
   addSquareTemplate: function() {
     var c0 = this.paper.squareTemplate(this.sqTile);
+    this.updateEventListeners();
   },
   addHexTemplate: function() {
     var template = this.paper.hexagonTemplate(this.sqTile);
     var c0 = template.c0, t1 = template.t1, t2 = template.t2, t3 = template.t3,
         t4 = template.t4, t5 = template.t5, t6 = template.t6, t7 = template.t7;
+    this.updateEventListeners();
   },
+  updateEventListeners: function() {
+    var points = this.paper.getPoints();
+    var elementViewModel = this.options.elementViewModel;
+    for (var i = 0; i < points.length; i++) {
+      points[i].mouseover(function() {
+        elementViewModel.set('message', this.getActualParameters());
+      });
+    };
+  },
+    
   modelChanged: function() {
     if (this.model.get('state') === this.StateEnum.ADD_HEX_TEMPLATE) {
       this.addHexTemplate();
@@ -172,9 +180,22 @@ views.ActionList = Backbone.View.extend({
       // to the table
       element.append(itemView.render().el);
     });
+    // scroll to the bottom
     element.css('overflow', 'hidden');
     element.scrollTop(100000);
     element.css('overflow', 'auto');
+    return this;
+  }
+});
+
+views.ElementView = Backbone.View.extend({
+  initialize: function(options) {
+    this.listenTo(this.model, 'change', this.render);
+  },
+  render: function() {
+    this.$el.html(this.model.get('message').toString());
+    console.log('n' + this.model.get('message').toString());
+    console.log('hmmm' + this.$el.html());
     return this;
   }
 });

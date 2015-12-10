@@ -18,7 +18,6 @@ body {
     top: 0;
     right: 0;
     max-height:40px;
-#    overflow-y: auto;
 }
 .fixed_headers th,
 .fixed_headers td {
@@ -66,4 +65,11 @@ body {
 }
 #buttons {
     padding: 10px
+}
+#elementview {
+    padding: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-height:40px;
 }

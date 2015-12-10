@@ -12,12 +12,13 @@ var Router = Backbone.Router.extend({
     this.editorModel = new models.Editor();
     // Buttons view controls buttons and updates editor model.
     this.buttonsView = new views.ButtonsView({ el: $('#buttons'), model: this.editorModel });
+
+    this.elementViewModel = new models.ElementViewModel();
+    this.elementView = new views.ElementView({ el: $('#elementview'), model: this.elementViewModel});
     // Editor view listens to changes in the editor view.
-    this.edView = new views.EditorView({model: this.editorModel});
-
-    // Keep track of our actions
-    this.historyView = new views.HistoryView({collection: this.actionList});
-
+    this.edView = new views.EditorView({model: this.editorModel, elementViewModel: this.elementViewModel});
+    
+    
 
     // Initialize a list of people
     // In this case we provide an array, but normally you'd

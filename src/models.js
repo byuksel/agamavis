@@ -7,6 +7,7 @@
 // to ensure the data is correct.
 var models = {};
 
+// The state of the Editor
 models.Editor = Backbone.Model.extend({
   StateEnum : {
     NOTHING: 0,
@@ -22,6 +23,7 @@ models.Editor = Backbone.Model.extend({
   }
 });
 
+// Action Item in the History View
 models.ActionItem = Backbone.Model.extend({
   defaults: {
     actionTag: ''
@@ -31,7 +33,7 @@ models.ActionItem = Backbone.Model.extend({
   validate: function(attributes) {
     if (typeof attributes.actionTag !== 'string') {
       // Return a failed validation
-      return 'Firstname is mandatory';
+      return 'ActionTag is mandatory';
     }
     // All validations passed, don't return anything
   }
@@ -41,3 +43,11 @@ models.ActionItem = Backbone.Model.extend({
 models.ActionCollection = Backbone.Collection.extend({
   model: models.ActionItem
 });
+
+// The model associated with the Element View
+models.ElementViewModel = Backbone.Model.extend({
+  defaults: {
+    message: ''
+  }
+});
+

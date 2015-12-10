@@ -149,7 +149,9 @@ module.exports = function(grunt) {
       scripts: {
         files: [ path.join('<%= projectparams.src_dir %>', '/**/*.css'),
                  path.join('<%= projectparams.src_dir %>', '/**/*.js'),
-                 path.join('<%= projectparams.src_dir %>', '/**/*.html') ],
+                 path.join('<%= projectparams.src_dir %>', '/**/*.html'),
+                 '../agamajs/dist/agama.0.0.2.standalone.min.js'
+               ],
         tasks: ['copy', 'replace']
       }
     }
