@@ -11,10 +11,12 @@ var models = {};
 models.Editor = Backbone.Model.extend({
   StateEnum : {
     NOTHING: 0,
-    DRAWALINE_FIRSTPOINT: 1,
-    DRAWALINE_SECONDPOINT: 2,
-    ADD_SQUARE_TEMPLATE: 3,
-    ADD_HEX_TEMPLATE: 4
+    FIRST_POINT_SELECTED: 1,
+    SECOND_POINT_SELECTED: 2,
+    ADD_CONLINE: 3,
+    ADD_EXTENDEDCONLINE: 4,
+    ADD_SQUARE_TEMPLATE: 5,
+    ADD_HEX_TEMPLATE: 6
   },
   defaults: {
     state: null

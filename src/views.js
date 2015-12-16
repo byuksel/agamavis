@@ -11,12 +11,15 @@ views.ButtonsView = Backbone.View.extend({
     'click .btn-line': 'drawALine',
     'click .btn-primary': 'transitionDown',
     'click .btn-add-hex': 'addHex',
-    'click .btn-add-sq': 'addSq'
+    'click .btn-add-sq': 'addSq',
+    'click .btn-add-extendedconline': 'addExtendendConline',
+    'click .btn-add-conline': 'addConline'
   },
 
   initialize: function(options) {
     this.StateEnum = this.model.StateEnum;
     this.render();
+    this.toggleLineButtons(false);
   },
 
   drawALine: function() {
@@ -30,14 +33,28 @@ views.ButtonsView = Backbone.View.extend({
   addSq: function() {
     this.model.set('state', this.StateEnum.ADD_SQUARE_TEMPLATE);
     this.toggleTemplateButtons(false);
+    this.toggleLineButtons(true);
   },
   addHex: function() {
     this.model.set('state', this.StateEnum.ADD_HEX_TEMPLATE);
     this.toggleTemplateButtons(false);
+    this.toggleLineButtons(true);
+  },
+  addExtendedConline: function() {
+    this.model.set('state', this.StateEnum.ADD_EXTENDEDCONLINE);
+    this.toggleLineButtons(false);
+  },
+  addConline: function() {
+    this.model.set('state', this.StateEnum.ADD_CONLINE);
+    this.toggleLineButtons(false);
   },
   toggleTemplateButtons: function(state) {
     this.$el.find('.btn-add-hex').prop('disabled', !state);
     this.$el.find('.btn-add-sq').prop('disabled', !state);
+  },
+  toggleLineButtons: function(state) {
+    this.$el.find('.btn-add-conline').prop('disabled', !state);
+    this.$el.find('.btn-add-extendedconline').prop('disabled', !state);
   },
   render: function(){
     var template = _.template( $('#buttons_template').html(), {} );
@@ -51,9 +68,6 @@ views.EditorView = Backbone.View.extend({
   el: '#outgraph',
   paper: null,
   Agama: null,
-  events: {
-    'click': 'clickMe'
-  },
   changed: function() {
     console.log('changed');
   },
@@ -79,27 +93,105 @@ views.EditorView = Backbone.View.extend({
      // self.render();
     //});
   },
-  clickMe: function() {
-    if (this.model.get('state') === this.StateEnum.DRAWALINE_FIRSTPOINT) {
-      console.log('do something');
-    }
-  },
   addSquareTemplate: function() {
     var c0 = this.paper.squareTemplate(this.sqTile);
+    this.options.historyCollection.add([{actionTag:'Add Square Template'}]);
     this.updateEventListeners();
   },
   addHexTemplate: function() {
     var template = this.paper.hexagonTemplate(this.sqTile);
     var c0 = template.c0, t1 = template.t1, t2 = template.t2, t3 = template.t3,
         t4 = template.t4, t5 = template.t5, t6 = template.t6, t7 = template.t7;
+    this.options.historyCollection.add([{actionTag:'Add Hexagon Template'}]);
     this.updateEventListeners();
+  },
+  addConline: function() {
+  },
+  addExtendedConline: function() {
   },
   updateEventListeners: function() {
     var points = this.paper.getPoints();
     var elementViewModel = this.options.elementViewModel;
+    var editorModel = this.model;
+    var stateEnum = this.StateEnum;
+    var historyCollection = this.options.historyCollection;
     for (var i = 0; i < points.length; i++) {
+      // Add them event listeners
+      points[i].toFront();
+      if (typeof points[i].agamavisState === 'string') {
+        // this point was already on the screen
+        // no need to update its event listeners.
+        continue;
+      }
+      points[i].agamavisState = 'init';
+      // Hack to make events to fire not only when we are on the circle
+      // but inside the circle.
+      // Another way to fix this is to use pointer-events
+      // https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/pointer-events
+      points[i].attr({'fill' : 'white', 'fill-opacity': 0});
       points[i].mouseover(function() {
-        elementViewModel.set('message', this.getActualParameters());
+        var owner =  this;
+        elementViewModel.set('message', owner.getActualParameters());
+        if (editorModel.get('state') !== stateEnum.NOTHING &&
+            editorModel.get('state') !== stateEnum.FIRST_POINT_SELECTED &&
+            editorModel.get('state') !== stateEnum.SECOND_POINT_SELECTED) {
+          // do nothing
+          return;
+        }
+        if (editorModel.get('state') === stateEnum.SECOND_POINT_SELECTED &&
+            owner.agamavisState === 'init') {
+          // do nothing
+          return;
+        }
+        owner.attr({'fill': 'red', 'fill-opacity': 1});
+      });
+      points[i].click(function() {
+        if (editorModel.get('state') !== stateEnum.NOTHING &&
+            editorModel.get('state') !== stateEnum.FIRST_POINT_SELECTED &&
+            editorModel.get('state') !== stateEnum.SECOND_POINT_SELECTED) {
+          // do nothing
+          return;
+        }
+        var owner = this;
+        if (owner.agamavisState === 'init' &&
+            editorModel.get('state') !== stateEnum.SECOND_POINT_SELECTED) {
+          // select element
+          owner.agamavisState = 'selected';
+          owner.attr({'fill': '#D7575C', 'fill-opacity': 1});
+          historyCollection.add([{actionTag:'Point ' + owner.agamapointid + ' selected'}]);
+          if (editorModel.get('state') === stateEnum.NOTHING) {
+            editorModel.set('state', stateEnum.FIRST_POINT_SELECTED);
+          } else if (editorModel.get('state') === stateEnum.FIRST_POINT_SELECTED) {
+            editorModel.set('state', stateEnum.SECOND_POINT_SELECTED);
+          }
+        } else if (owner.agamavisState === 'selected' ) {
+          // unselect element
+          owner.agamavisState = 'init';
+          historyCollection.add([{actionTag:'Point ' + owner.agamapointid + ' unselected'}]);
+          if (editorModel.get('state') === stateEnum.SECOND_POINT_SELECTED) {
+            editorModel.set('state', stateEnum.FIRST_POINT_SELECTED);
+          } else if (editorModel.get('state') === stateEnum.FIRST_POINT_SELECTED) {
+            editorModel.set('state', stateEnum.NOTHING);
+          }
+        }
+      });
+      points[i].mouseout(function() {
+        elementViewModel.set('message', '');
+        var owner = this;
+        if (editorModel.get('state') !== stateEnum.NOTHING &&
+            editorModel.get('state') !== stateEnum.FIRST_POINT_SELECTED &&
+            editorModel.get('state') !== stateEnum.SECOND_POINT_SELECTED) {
+          // do nothing
+          return;
+        }
+        if (owner.agamavisState === 'init') {
+          // change the color back to what it was only if the element
+          // is in init state.
+          owner.attr({'fill': 'white', 'fill-opacity': 0});
+        } else {
+          // remain at selected status
+          owner.attr({'fill': '#D7575C', 'fill-opacity': 1});
+        }
       });
     };
   },
@@ -113,6 +205,11 @@ views.EditorView = Backbone.View.extend({
       this.addSquareTemplate();
       this.model.set('state', this.StateEnum.NOTHING);
     }
+    if (this.model.get('state') === this.StateEnum.ADD_CONLINE) {
+    }
+    if (this.model.get('state') === this.StateEnum.ADD_EXTENDEDCONLINE) {
+    }
+    
   },
   render: function() {
     console.log('render is called');
@@ -167,7 +264,7 @@ views.ActionList = Backbone.View.extend({
     var element = this.$el;
     // Clear potential old entries first
     this.$el.empty();
-
+    
     // Go through the collection items
     this.collection.forEach(function(item) {
 
@@ -183,7 +280,7 @@ views.ActionList = Backbone.View.extend({
     // scroll to the bottom
     element.css('overflow', 'hidden');
     element.scrollTop(100000);
-    element.css('overflow', 'auto');
+    //    element.css('overflow', 'auto');
     return this;
   }
 });
@@ -194,8 +291,6 @@ views.ElementView = Backbone.View.extend({
   },
   render: function() {
     this.$el.html(this.model.get('message').toString());
-    console.log('n' + this.model.get('message').toString());
-    console.log('hmmm' + this.$el.html());
     return this;
   }
 });
