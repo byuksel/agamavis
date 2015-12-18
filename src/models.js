@@ -16,12 +16,22 @@ models.Editor = Backbone.Model.extend({
     ADD_CONLINE: 3,
     ADD_EXTENDEDCONLINE: 4,
     ADD_SQUARE_TEMPLATE: 5,
-    ADD_HEX_TEMPLATE: 6
+    ADD_HEX_TEMPLATE: 6,
+    CLEAR: 7,
+    ADD_PATTERNLINE: 8
+  },
+  DesignEnum : {
+    CONSTRUCTION: 0,
+    PATTERN: 1
   },
   defaults: {
-    state: null
+    state: null,
+    designstate: null
   },
   initialize: function() {
+    this.set('state', this.StateEnum.NOTHING);
+    this.set('designstate', this.DesignEnum.CONSTRUCTION);
+    
   }
 });
 

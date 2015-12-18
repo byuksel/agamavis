@@ -9,37 +9,56 @@ var views = {};
 views.ButtonsView = Backbone.View.extend({
   events: {
     'click .btn-line': 'drawALine',
-    'click .btn-primary': 'transitionDown',
     'click .btn-add-hex': 'addHex',
     'click .btn-add-sq': 'addSq',
-    'click .btn-add-extendedconline': 'addExtendendConline',
-    'click .btn-add-conline': 'addConline'
+    'click .btn-add-extendedconline': 'addExtendedConline',
+    'click .btn-add-conline': 'addConline',
+    'click .btn-clear': 'clearEverything',
+    'click .btn-start-pattern-lines': 'startPatternLines',
+    'click .btn-add-patternline': 'addPatternLine'
   },
-
   initialize: function(options) {
+    this.listenTo(this.model, 'change', this.modelChanged);
     this.StateEnum = this.model.StateEnum;
+    this.DesignEnum = this.model.DesignEnum;
+    this.freshView();
+  },
+  freshView: function() {
     this.render();
     this.toggleLineButtons(false);
-  },
-
-  drawALine: function() {
-    this.model.set('state', this.StateEnum.DRAWALINE_FIRSTPOINT);
-    console.log(this.model.get('state'));
-  },
-
-  transitionDown: function() {
-    console.log('Transition down');
+    this.togglePatternButton(false);
+    this.toggleStartPatternLinesButton(false);
+   },  
+  modelChanged: function() {
+    if (this.model.get('state') === this.StateEnum.CLEAR) {
+      this.freshView();
+    }
+    if (this.model.get('state') === this.StateEnum.SECOND_POINT_SELECTED) {
+      console.log(this.model.get('designstate'));
+      if (this.model.get('designstate') === this.DesignEnum.CONSTRUCTION) {
+        this.toggleLineButtons(true);
+      } else if (this.model.get('designstate') === this.DesignEnum.PATTERN) {
+        this.togglePatternButton(true);
+      }
+    }
+    if (this.model.get('state') === this.StateEnum.FIRST_POINT_SELECTED ||
+        this.model.get('state') === this.StateEnum.NOTHING) {
+      this.toggleLineButtons(false);
+      this.togglePatternButton(false);
+    }
   },
   addSq: function() {
     this.model.set('state', this.StateEnum.ADD_SQUARE_TEMPLATE);
     this.toggleTemplateButtons(false);
-    this.toggleLineButtons(true);
-  },
+    this.toggleLineButtons(false);
+    this.toggleStartPatternLinesButton(true);
+   },
   addHex: function() {
     this.model.set('state', this.StateEnum.ADD_HEX_TEMPLATE);
     this.toggleTemplateButtons(false);
-    this.toggleLineButtons(true);
-  },
+    this.toggleLineButtons(false);
+    this.toggleStartPatternLinesButton(true);
+   },
   addExtendedConline: function() {
     this.model.set('state', this.StateEnum.ADD_EXTENDEDCONLINE);
     this.toggleLineButtons(false);
@@ -48,6 +67,16 @@ views.ButtonsView = Backbone.View.extend({
     this.model.set('state', this.StateEnum.ADD_CONLINE);
     this.toggleLineButtons(false);
   },
+  addPatternLine: function() {
+    this.model.set('state', this.StateEnum.ADD_PATTERNLINE);
+    this.togglePatternButton(false);
+  },
+  startPatternLines: function() {
+    this.model.set('designstate', this.DesignEnum.PATTERN);
+    this.toggleLineButtons(false);
+    this.$el.find('.btn-start-pattern-lines').html('Pattern Line Mode');
+    this.toggleStartPatternLinesButton(false);
+  },
   toggleTemplateButtons: function(state) {
     this.$el.find('.btn-add-hex').prop('disabled', !state);
     this.$el.find('.btn-add-sq').prop('disabled', !state);
@@ -55,6 +84,16 @@ views.ButtonsView = Backbone.View.extend({
   toggleLineButtons: function(state) {
     this.$el.find('.btn-add-conline').prop('disabled', !state);
     this.$el.find('.btn-add-extendedconline').prop('disabled', !state);
+  },
+  togglePatternButton: function(state) {
+    this.$el.find('.btn-add-patternline').prop('disabled', !state);
+  },
+  toggleStartPatternLinesButton: function(state) {
+    this.$el.find('.btn-start-pattern-lines').prop('disabled', !state);
+  },
+  clearEverything: function() {
+    this.model.clear();
+    this.model.set('state', this.model.StateEnum.CLEAR);
   },
   render: function(){
     var template = _.template( $('#buttons_template').html(), {} );
@@ -68,30 +107,20 @@ views.EditorView = Backbone.View.extend({
   el: '#outgraph',
   paper: null,
   Agama: null,
-  changed: function() {
-    console.log('changed');
-  },
+  selectedPoints: [],
   initialize: function(options) {
     this.options = options;
     this.StateEnum = this.model.StateEnum;
     this.listenTo(this.model, 'change', this.modelChanged);
     console.log('init on editorview');
     this.Agama = require('agama');
-    var winInfo = this.Agama.getWidthHeight(document, 'outgraph');
-    this.paper =  new this.Agama('outgraph', winInfo.width, winInfo.height);
+    this.winInfo = this.Agama.getWidthHeight(document, 'outgraph');
+    this.paper =  new this.Agama('outgraph', this.winInfo.width, this.winInfo.height);
+    this.freshTile(this.winInfo);
+  },
+  freshTile: function(winInfo) {
     var sqInfo = this.Agama.getSquareCoorInMiddle(winInfo, 20);
     this.sqTile = this.paper.getSquareTile(sqInfo.topX, sqInfo.topY, sqInfo.bottomX, sqInfo.bottomY);
-    var self        = this;
-    // Retrieve elements of the collection
-    //this.collection.fetch().done(function () {
-      // Add circles if the collection is empty
-    //  if (self.collection.isEmpty()) {
-    //    self.addDefaultCircles();
-    //  }
-
-      // Display the snowman
-     // self.render();
-    //});
   },
   addSquareTemplate: function() {
     var c0 = this.paper.squareTemplate(this.sqTile);
@@ -115,6 +144,7 @@ views.EditorView = Backbone.View.extend({
     var editorModel = this.model;
     var stateEnum = this.StateEnum;
     var historyCollection = this.options.historyCollection;
+    var selectedPoints = this.selectedPoints;
     for (var i = 0; i < points.length; i++) {
       // Add them event listeners
       points[i].toFront();
@@ -157,6 +187,7 @@ views.EditorView = Backbone.View.extend({
             editorModel.get('state') !== stateEnum.SECOND_POINT_SELECTED) {
           // select element
           owner.agamavisState = 'selected';
+          selectedPoints.push(owner);
           owner.attr({'fill': '#D7575C', 'fill-opacity': 1});
           historyCollection.add([{actionTag:'Point ' + owner.agamapointid + ' selected'}]);
           if (editorModel.get('state') === stateEnum.NOTHING) {
@@ -167,6 +198,10 @@ views.EditorView = Backbone.View.extend({
         } else if (owner.agamavisState === 'selected' ) {
           // unselect element
           owner.agamavisState = 'init';
+          var index = selectedPoints.indexOf(owner);
+          if (index > -1) {
+            selectedPoints.splice(index, 1);
+          }
           historyCollection.add([{actionTag:'Point ' + owner.agamapointid + ' unselected'}]);
           if (editorModel.get('state') === stateEnum.SECOND_POINT_SELECTED) {
             editorModel.set('state', stateEnum.FIRST_POINT_SELECTED);
@@ -197,6 +232,15 @@ views.EditorView = Backbone.View.extend({
   },
     
   modelChanged: function() {
+    if (this.model.get('state') === this.StateEnum.NOTHING) {
+      return;
+    }
+    if (this.model.get('state') === this.StateEnum.CLEAR) {
+      this.paper.clear();
+      this.freshTile(this.winInfo);
+      this.options.historyCollection.reset([]);
+      this.model.set('state', this.StateEnum.NOTHING);
+    }
     if (this.model.get('state') === this.StateEnum.ADD_HEX_TEMPLATE) {
       this.addHexTemplate();
       this.model.set('state', this.StateEnum.NOTHING);
@@ -206,10 +250,40 @@ views.EditorView = Backbone.View.extend({
       this.model.set('state', this.StateEnum.NOTHING);
     }
     if (this.model.get('state') === this.StateEnum.ADD_CONLINE) {
+      console.log(this.selectedPoints[0], this.selectedPoints[1], this.selectedPoints.length);
+      this.paper.conline(this.selectedPoints[0], this.selectedPoints[1]);
+      this.options.historyCollection.add([{actionTag:'Conline added'}]);
+      this.updateEventListeners();
+      this.selectedPoints[0].agamavisState = 'init';
+      this.selectedPoints[0].attr({'fill': 'white', 'fill-opacity': 0});
+      this.selectedPoints[1].agamavisState = 'init';
+      this.selectedPoints[1].attr({'fill': 'white', 'fill-opacity': 0});
+      this.selectedPoints.splice(0, 2);
+      this.model.set('state', this.StateEnum.NOTHING);
     }
     if (this.model.get('state') === this.StateEnum.ADD_EXTENDEDCONLINE) {
+      this.paper.extendedconline(this.sqTile, this.selectedPoints[0], this.selectedPoints[1]);
+      this.options.historyCollection.add([{actionTag:'Extended-Conline added'}]);
+      this.updateEventListeners();
+      this.selectedPoints[0].agamavisState = 'init';
+      this.selectedPoints[0].attr({'fill': 'white', 'fill-opacity': 0});
+      this.selectedPoints[1].agamavisState = 'init';
+      this.selectedPoints[1].attr({'fill': 'white', 'fill-opacity': 0});
+      this.selectedPoints.splice(0, 2);
+      this.model.set('state', this.StateEnum.NOTHING);
     }
-    
+    if (this.model.get('state') === this.StateEnum.ADD_PATTERNLINE) {
+      console.log(this.selectedPoints[0], this.selectedPoints[1], this.selectedPoints.length);
+      this.paper.patternline(this.selectedPoints[0], this.selectedPoints[1]);
+      this.options.historyCollection.add([{actionTag:'PatternLine added'}]);
+      this.selectedPoints[0].agamavisState = 'init';
+      this.selectedPoints[0].attr({'fill': 'white', 'fill-opacity': 0});
+      this.selectedPoints[1].agamavisState = 'init';
+      this.selectedPoints[1].attr({'fill': 'white', 'fill-opacity': 0});
+      this.selectedPoints.splice(0, 2);
+      this.model.set('state', this.StateEnum.NOTHING);
+    }
+
   },
   render: function() {
     console.log('render is called');

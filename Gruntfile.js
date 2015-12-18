@@ -36,7 +36,7 @@ module.exports = function(grunt) {
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'jquery.min.map') ,
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'underscore-min.js') ,
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'underscore-min.map') ,
-                  path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'agamajs.0.0.2.standalone.min.js') ,
+                  path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'agamajs.0.0.3.standalone.js') ,
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'ie-emulation-modes-warning.js'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'ie8-responsive-file-warning.js'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'ie10-viewport-bug-workaround.js'),
@@ -69,7 +69,7 @@ module.exports = function(grunt) {
                    './assets/js/ie10-viewport-bug-workaround.js' ,
                    './assets/js/ie-emulation-modes-warning.js',
                    './assets/js/ie8-responsive-file-warning.js',
-                   '../agamajs/dist/agama.0.0.2.standalone.min.js'],
+                   '../agamajs/dist/agama.0.0.3.standalone.js'],
             dest: path.join('<%= projectparams.dist_dir %>', '<%= projectparams.js_dir%>/'),
             flatten: true,
             expand: true }, {
@@ -132,7 +132,7 @@ module.exports = function(grunt) {
                 'ie10-viewport-bug-workaround.css': path.join('<%= projectparams.css_dir %>', 'ie10-viewport-bug-workaround.css'),
                 'ie-emulation-modes-warning.js': path.join('<%= projectparams.js_dir %>', 'ie-emulation-modes-warning.js'),
                 'ie8-responsive-file-warning.js': path.join('<%= projectparams.js_dir %>', 'ie8-responsive-file-warning.js'),
-                'agama.standalone.min.js': path.join('<%= projectparams.js_dir %>', 'agama.0.0.2.standalone.min.js')
+                'agama.standalone.min.js': path.join('<%= projectparams.js_dir %>', 'agama.0.0.3.standalone.js')
               }
             }
           ]
@@ -150,7 +150,8 @@ module.exports = function(grunt) {
         files: [ path.join('<%= projectparams.src_dir %>', '/**/*.css'),
                  path.join('<%= projectparams.src_dir %>', '/**/*.js'),
                  path.join('<%= projectparams.src_dir %>', '/**/*.html'),
-                 '../agamajs/dist/agama.0.0.2.standalone.min.js'
+                 '../agamajs/dist/agama.0.0.3.standalone.min.js',
+                 '../agamajs/dist/agama.0.0.3.standalone.js'
                ],
         tasks: ['copy', 'replace']
       }

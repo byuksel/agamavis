@@ -12,6 +12,11 @@ body {
     width: 100%;
     background-color: #f0f0f0;
 }
+#button_section {
+    position: relative;
+    display: inline-block;
+    width: 50%;
+}
 #history {
     padding: 10px;
     position: absolute;
@@ -66,8 +71,10 @@ body {
 .old_ie_wrapper tbody {
     height: auto;
 }
-#buttons {
-    padding: 10px
+#buttons, .btn  {
+    padding: 10px;
+    margin: 3px;
+                 
 }
 #elementview {
     padding: 10px;
