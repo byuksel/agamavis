@@ -42,6 +42,7 @@ module.exports = function(grunt) {
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.js_dir %>', 'ie10-viewport-bug-workaround.js'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>', 'ie10-viewport-bug-workaround.css'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>', 'bootstrap.min.css'),
+                  path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>', 'popr.css'),
                   path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>', 'bootstrap.min.css.map'),
                   path.join('<%= projectparams.dist_dir %>', '<%= projectparams.fonts_dir %>', '/glyphicons-halflings-*')
                 ],
@@ -75,7 +76,8 @@ module.exports = function(grunt) {
             expand: true }, {
               src: [ './node_modules/bootstrap/dist/css/bootstrap.min.css',
                      './node_modules/bootstrap/dist/css/bootstrap.min.css.map',
-                     './assets/css/ie10-viewport-bug-workaround.css' ],
+                     './assets/css/ie10-viewport-bug-workaround.css',
+                     './assets/css/popr.css',] ,
               dest:  path.join('<%= projectparams.dist_dir %>','<%= projectparams.css_dir %>'),
               flatten: true,
               expand: true },
@@ -125,6 +127,7 @@ module.exports = function(grunt) {
                 'underscore.min.js': path.join('<%= projectparams.js_dir %>', 'underscore-min.js'),
                 'bootstrap.min.js': path.join('<%= projectparams.js_dir %>', 'bootstrap.min.js'),
                 'bootstrap.min.css': path.join('<%= projectparams.css_dir %>', 'bootstrap.min.css'),
+                'popr.css': path.join('<%= projectparams.css_dir %>', 'popr.css'),
                 'author': '<%= pkg.author.name %>',
                 'description': '<%= pkg.description %>',
                 'name': '<%= pkg.name %>',
@@ -150,8 +153,9 @@ module.exports = function(grunt) {
         files: [ path.join('<%= projectparams.src_dir %>', '/**/*.css'),
                  path.join('<%= projectparams.src_dir %>', '/**/*.js'),
                  path.join('<%= projectparams.src_dir %>', '/**/*.html'),
+                 './assets/css/popr.css',
                  '../agamajs/dist/agama.0.0.3.standalone.min.js',
-                 '../agamajs/dist/agama.0.0.3.standalone.js'
+                 '../agamajs/dist/agama.0.0.3.standalone.js',
                ],
         tasks: ['copy', 'replace']
       }

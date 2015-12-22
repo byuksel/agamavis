@@ -1,18 +1,15 @@
 {
-  "name": "AgamaVis",
+  "name": "TesseraVis",
   "version": "0.0.2",
-  "description": "AgamaVis: the graphical editor for creating architectural tessellations",
+  "description": "TesseraVis: the graphical editor for creating architectural tessellations",
   "keywords": [
     "graphical editor",
     "gui for tessellations",
     "tessellation",
     "pattern",
     "architecture",
-    "architectural patterns",
-    "projectagama",
-    "project agama"
+    "architectural patterns"
   ],
-  "homepage": "http://www.projectagama.com",
   "author": {
     "name": "Baris Yuksel",
     "url": "http://barisyuksel.com"

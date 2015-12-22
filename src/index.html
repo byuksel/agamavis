@@ -16,11 +16,15 @@
     <!-- Bootstrap core CSS -->
     <link href="@@bootstrap.min.css" rel="stylesheet">
 
+    <!-- Popr core CSS -->
+    <link href="@@popr.css" rel="stylesheet">
+
+
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link href="@@ie10-viewport-bug-workaround.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="agamavis-template.css" rel="stylesheet">
+    <link href="tesseravis-template.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="@@ie8-responsive-file-warning.js"></script><![endif]-->
@@ -66,8 +70,10 @@
           <span id='history'><table class='fixed_headers'><thead><tr><th>Actions</th></tr></thead><tbody></tbody></table></span>
           <span id='elementview'></span>
         </div>
-        <div id='buttons'></div>
-
+        <div id='control_panel'>
+          <div id='buttons'></div>
+          <div id='save'></div>
+        </div>
         <script type="text/template" id="buttons_template">
           <div id='button_section'>
             <button type="button" class="btn btn-danger btn-clear">Clear</button>
@@ -77,13 +83,33 @@
             <button type="button" class="btn btn-success btn-add-extendedconline">Add Extended Construction Line</button>
             <button type="button" class="btn btn-warning btn-start-pattern-lines">Start Pattern Lines</button>
             <button type="button" class="btn btn-success btn-add-patternline">Add Pattern Line</button>
-            <button type="button" class="btn btn btn-link">Link</button>
+          </div>
+        <script type="text/template" id="save_template">
+          <div id='save_section'>
+            <button type="button" class="btn btn-link btn-upload">
+              <label for="fileUpload" id="uploadlabel"><span class="opensavespan">Open</span></label></button>
+            <button type="button" class="btn btn-link btn-download popr" data-id="1">
+              <label id="downloadlabel"><span class="opensavespan">Save</span></label></button>
+            <textarea id="text" rows="0" cols="50" style="visibility: hidden;"></textarea>
+            <input type="file" id="fileUpload" accept=".json" name="files1" style="visibility: hidden;">
+
           </div>
         </script>
+        
+        <div class="box">
+          <script type="text/template" id="popr_template">
+            <div class="popr_content" id="first">
+              <label  style="margin-left:10px" class="noclicklabel">Filename: <input type="text" class="filename" placeholder="mymodel.json"/></label>
+              <button type="button" class="btn btn-default" id="ok" >Ok</button>
+              <button type="button" class="btn btn-default" id="cancel">Cancel</button>
+            </div>
+            <div class="popr_content" id="second">
+              <label id="message"></label>
+              <button type="button" class="btn btn-default" id="ok" style="visibility:hidden">Ok</button>
+            </div>
+          </script>
 
-        <pre style="visibility:hidden;">
-        </pre>
-
+        </div>
 
       </div><!-- /.container -->
       <!-- Bootstrap core JavaScript

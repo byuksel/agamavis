@@ -1,9 +1,8 @@
-// Views are responsible for rendering stuff on the screen (well,
-// into the DOM).
-//
-// Typically views are instantiated for a model or a collection,
-// and they watch for change events in those in order to automatically
-// update the data shown on the screen.
+/**
+ * @copyright Copyright (c) 2015, Baris Yuksel,  All Rights Reserved.
+ * @licence [Apache-2.0]{http://www.apache.org/licenses/LICENSE-2.0}
+ * @author Baris Yuksel <baris@onehundredyearsofcode.com>
+ */
 var views = {};
 
 views.ButtonsView = Backbone.View.extend({
@@ -148,12 +147,12 @@ views.EditorView = Backbone.View.extend({
     for (var i = 0; i < points.length; i++) {
       // Add them event listeners
       points[i].toFront();
-      if (typeof points[i].agamavisState === 'string') {
+      if (typeof points[i].tesseravisState === 'string') {
         // this point was already on the screen
         // no need to update its event listeners.
         continue;
       }
-      points[i].agamavisState = 'init';
+      points[i].tesseravisState = 'init';
       // Hack to make events to fire not only when we are on the circle
       // but inside the circle.
       // Another way to fix this is to use pointer-events
@@ -169,7 +168,7 @@ views.EditorView = Backbone.View.extend({
           return;
         }
         if (editorModel.get('state') === stateEnum.SECOND_POINT_SELECTED &&
-            owner.agamavisState === 'init') {
+            owner.tesseravisState === 'init') {
           // do nothing
           return;
         }
@@ -183,10 +182,10 @@ views.EditorView = Backbone.View.extend({
           return;
         }
         var owner = this;
-        if (owner.agamavisState === 'init' &&
+        if (owner.tesseravisState === 'init' &&
             editorModel.get('state') !== stateEnum.SECOND_POINT_SELECTED) {
           // select element
-          owner.agamavisState = 'selected';
+          owner.tesseravisState = 'selected';
           selectedPoints.push(owner);
           owner.attr({'fill': '#D7575C', 'fill-opacity': 1});
           historyCollection.add([{actionTag:'Point ' + owner.agamapointid + ' selected'}]);
@@ -195,9 +194,9 @@ views.EditorView = Backbone.View.extend({
           } else if (editorModel.get('state') === stateEnum.FIRST_POINT_SELECTED) {
             editorModel.set('state', stateEnum.SECOND_POINT_SELECTED);
           }
-        } else if (owner.agamavisState === 'selected' ) {
+        } else if (owner.tesseravisState === 'selected' ) {
           // unselect element
-          owner.agamavisState = 'init';
+          owner.tesseravisState = 'init';
           var index = selectedPoints.indexOf(owner);
           if (index > -1) {
             selectedPoints.splice(index, 1);
@@ -219,7 +218,7 @@ views.EditorView = Backbone.View.extend({
           // do nothing
           return;
         }
-        if (owner.agamavisState === 'init') {
+        if (owner.tesseravisState === 'init') {
           // change the color back to what it was only if the element
           // is in init state.
           owner.attr({'fill': 'white', 'fill-opacity': 0});
@@ -234,6 +233,14 @@ views.EditorView = Backbone.View.extend({
   modelChanged: function() {
     if (this.model.get('state') === this.StateEnum.NOTHING) {
       return;
+    }
+    if (this.model.get('state') === this.StateEnum.UPLOAD_JSON) {
+      this.paper.remove();
+      this.paper =  this.Agama.fromJSON(this.model.get('json'), 'outgraph');
+      this.paper.setSize(this.winInfo.width, this.winInfo.height);
+      this.freshTile(this.winInfo);
+      this.model.set('state', this.StateEnum.NOTHING);
+      this.model.set('json', null);
     }
     if (this.model.get('state') === this.StateEnum.CLEAR) {
       this.paper.clear();
@@ -254,9 +261,9 @@ views.EditorView = Backbone.View.extend({
       this.paper.conline(this.selectedPoints[0], this.selectedPoints[1]);
       this.options.historyCollection.add([{actionTag:'Conline added'}]);
       this.updateEventListeners();
-      this.selectedPoints[0].agamavisState = 'init';
+      this.selectedPoints[0].tesseravisState = 'init';
       this.selectedPoints[0].attr({'fill': 'white', 'fill-opacity': 0});
-      this.selectedPoints[1].agamavisState = 'init';
+      this.selectedPoints[1].tesseravisState = 'init';
       this.selectedPoints[1].attr({'fill': 'white', 'fill-opacity': 0});
       this.selectedPoints.splice(0, 2);
       this.model.set('state', this.StateEnum.NOTHING);
@@ -265,9 +272,9 @@ views.EditorView = Backbone.View.extend({
       this.paper.extendedconline(this.sqTile, this.selectedPoints[0], this.selectedPoints[1]);
       this.options.historyCollection.add([{actionTag:'Extended-Conline added'}]);
       this.updateEventListeners();
-      this.selectedPoints[0].agamavisState = 'init';
+      this.selectedPoints[0].tesseravisState = 'init';
       this.selectedPoints[0].attr({'fill': 'white', 'fill-opacity': 0});
-      this.selectedPoints[1].agamavisState = 'init';
+      this.selectedPoints[1].tesseravisState = 'init';
       this.selectedPoints[1].attr({'fill': 'white', 'fill-opacity': 0});
       this.selectedPoints.splice(0, 2);
       this.model.set('state', this.StateEnum.NOTHING);
@@ -276,9 +283,9 @@ views.EditorView = Backbone.View.extend({
       console.log(this.selectedPoints[0], this.selectedPoints[1], this.selectedPoints.length);
       this.paper.patternline(this.selectedPoints[0], this.selectedPoints[1]);
       this.options.historyCollection.add([{actionTag:'PatternLine added'}]);
-      this.selectedPoints[0].agamavisState = 'init';
+      this.selectedPoints[0].tesseravisState = 'init';
       this.selectedPoints[0].attr({'fill': 'white', 'fill-opacity': 0});
-      this.selectedPoints[1].agamavisState = 'init';
+      this.selectedPoints[1].tesseravisState = 'init';
       this.selectedPoints[1].attr({'fill': 'white', 'fill-opacity': 0});
       this.selectedPoints.splice(0, 2);
       this.model.set('state', this.StateEnum.NOTHING);
@@ -360,11 +367,144 @@ views.ActionList = Backbone.View.extend({
 });
 
 views.ElementView = Backbone.View.extend({
+
   initialize: function(options) {
     this.listenTo(this.model, 'change', this.render);
+
   },
   render: function() {
     this.$el.html(this.model.get('message').toString());
     return this;
+  }
+});
+
+views.SaveView = Backbone.View.extend({
+  isFileAPIAvailable: false,
+  historyCollection: null,
+  events: {
+    'change #fileUpload': 'upload',
+    'change #fileDownload': 'download',
+    'click .btn-download': 'downloadButton',
+    'click .btn-upload': 'uploadButton',
+  },
+  initialize: function(options) {
+    this.historyCollection = options.historyCollection;
+    if (window.File && window.FileReader &&
+        window.FileList && window.Blob) {
+      this.isFileAPIAvailable = true;
+    };
+    this.render();
+  },
+  download: function(event) {
+    console.log(event.target);
+    // files is a FileList of File objects. List some properties.
+    console.log(output);
+  },
+  upload: function(event) {
+    console.log('upload is clicked');
+    var file = event.target.files[0];
+    if (typeof file === 'undefined') {
+      // Nothing selected, just return
+      return;
+    } else{
+      if (!file.type.match('application/json')) {
+        this.historyCollection.add([{actionTag:'File err: not a json file'}]);        
+        return;
+      }
+      var reader = new FileReader();
+      var model = this.model;
+      var historyCollection = this.historyCollection;
+      reader.onload = function(e) {
+        model.set('json', e.target.result);
+        model.set('state', model.StateEnum.UPLOAD_JSON);
+        historyCollection.add([{actionTag:'Opened:' +
+                                escape(file.name).substring(0,10) + '..'}]);
+      };
+      reader.onerror = function(e) {
+        historyCollection.add([{actionTag:'File err:' +
+                                e.target.error.name}]);
+      };
+      reader.readAsText(file);
+    }
+  },
+  download: function(event) {
+    console.log('download is clicked');
+  },
+  downloadButton: function(event) {
+    console.log('downloadButton is clicked');
+  
+  },
+  uploadButton: function(event) {
+    
+  },
+  render: function(){
+    var template = _.template( $('#save_template').html(), {} );
+    this.$el.html( template );
+    return this;
+  }
+});
+
+views.SaveFilenameView = Backbone.View.extend({
+  events: {
+    'click': 'clickOnMain',
+    'click #ok': 'clickOk',
+    'click #cancel': 'clickCancel',
+    'keyup .filename' : 'keyupFilename'
+  },
+  initialize: function(options) {
+    this.popr_cont = '.popr_container_' + this.model.get('mode');
+    this.render();
+  },
+  render: function() {
+    var popr_cont = this.popr_cont;
+    var d_m = this.model.get('mode');
+    var template = _.template( $('#popr_template').html(), {} );
+    var out = '<div class="popr_container_' + d_m +
+        '"><div class="popr_point_' + d_m +
+        '">' + template()+ '</div></div>';
+    this.$el.append(out);
+        
+    var w_t = $(popr_cont).outerWidth();
+    var w_e = this.$el.width();
+    var m_l = (w_e / 2) - (w_t / 2);
+        
+    $(popr_cont).css('margin-left', m_l + 'px');
+
+    $(popr_cont).find('.noclicklabel').click(function(event) {
+      event.stopPropagation();
+    });
+    $(popr_cont).hide();
+  },
+  clickOnMain: function(event) {
+    if (!this.model.get('isVisible'))  {
+      this.model.set('isVisible', true);
+      this.$el.find('.popr_content#second').css('z-index', -1);
+      $(this.popr_cont).fadeIn(this.model.get('speed'));
+    } else {
+      this.model.set('isVisible', false);
+      if (this.model.get('delay') === true) {
+        $(this.popr_cont).delay(500).fadeOut(200);
+        this.model.set('delay', false);
+      } else {
+        $(this.popr_cont).hide();
+      }
+    }
+    this.model.set('delay', false);
+  },
+  keyupFilename: function(event) {
+    if(event.keyCode === 13){
+      this.$el.find('#ok').click();
+    }
+  },
+  clickOk: function() {
+    this.model.set('delay', true);
+    this.$el.find('.popr_content #message').text('DID IT!');
+    this.$el.find('.popr_content#second').css('z-index', 10);
+    console.log(this.$el.find('.popr_content#second').html());
+    this.model.set('filename', this.$el.find('.filename').val());
+  },
+  clickCancel: function() {
+    this.model.set('delay', true);
+    this.$el.find('.filename').val(this.model.get('filename'));
   }
 });

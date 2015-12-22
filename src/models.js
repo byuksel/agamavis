@@ -18,7 +18,8 @@ models.Editor = Backbone.Model.extend({
     ADD_SQUARE_TEMPLATE: 5,
     ADD_HEX_TEMPLATE: 6,
     CLEAR: 7,
-    ADD_PATTERNLINE: 8
+    ADD_PATTERNLINE: 8,
+    UPLOAD_JSON: 9
   },
   DesignEnum : {
     CONSTRUCTION: 0,
@@ -26,12 +27,13 @@ models.Editor = Backbone.Model.extend({
   },
   defaults: {
     state: null,
-    designstate: null
+    designstate: null,
+    json: null
   },
   initialize: function() {
     this.set('state', this.StateEnum.NOTHING);
     this.set('designstate', this.DesignEnum.CONSTRUCTION);
-    
+    this.set('json', null);
   }
 });
 
@@ -60,6 +62,15 @@ models.ActionCollection = Backbone.Collection.extend({
 models.ElementViewModel = Backbone.Model.extend({
   defaults: {
     message: ''
+  }
+});
+
+// The model associated with the Element View
+models.SaveFilenameModel = Backbone.Model.extend({
+  defaults: {
+    speed        : 200,
+    mode         : 'bottom',
+    isVisible : false
   }
 });
 
