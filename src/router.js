@@ -26,11 +26,14 @@ var Router = Backbone.Router.extend({
     // Editor view listens to changes in the editor view.
     this.edView = new views.EditorView({model: this.editorModel, elementViewModel: this.elementViewModel,
                                         historyCollection: this.historyCollection});
+    this.saveFilenameModel = new models.SaveFilenameModel();
     this.saveView = new views.SaveView({el: $('#save'),
                                         historyCollection: this.historyCollection,
-                                        model: this.editorModel});
-    this.saveFilenameModel = new models.SaveFilenameModel();
-    this.saveFilenameView = new views.SaveFilenameView({el: $('.popr'),  model: this.saveFilenameModel});
+                                        model: this.editorModel,
+                                        saveFilenameModel: this.saveFilenameModel});
+    this.saveFilenameView = new views.SaveFilenameView({el: $('.popr'),  model: this.saveFilenameModel,
+                                                        historyCollection: this.historyCollection});
+
 
   }
 });

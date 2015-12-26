@@ -88,27 +88,29 @@
           <div id='save_section'>
             <button type="button" class="btn btn-link btn-upload">
               <label for="fileUpload" id="uploadlabel"><span class="opensavespan">Open</span></label></button>
-            <button type="button" class="btn btn-link btn-download popr" data-id="1">
+            <button type="button" class="btn btn-link btn-download popr">
               <label id="downloadlabel"><span class="opensavespan">Save</span></label></button>
             <textarea id="text" rows="0" cols="50" style="visibility: hidden;"></textarea>
             <input type="file" id="fileUpload" accept=".json" name="files1" style="visibility: hidden;">
-
           </div>
         </script>
-        
-        <div class="box">
-          <script type="text/template" id="popr_template">
-            <div class="popr_content" id="first">
-              <label  style="margin-left:10px" class="noclicklabel">Filename: <input type="text" class="filename" placeholder="mymodel.json"/></label>
-              <button type="button" class="btn btn-default" id="ok" >Ok</button>
-              <button type="button" class="btn btn-default" id="cancel">Cancel</button>
-            </div>
-            <div class="popr_content" id="second">
-              <label id="message"></label>
-              <button type="button" class="btn btn-default" id="ok" style="visibility:hidden">Ok</button>
-            </div>
-          </script>
 
+        <!-- Save Filename Menus -->
+        <script type="text/template" id="popr_template">
+          <!-- First menu for filename and ok/cancel buttons -->
+          <div class="popr_content" id="first">
+            <label  style="margin-left:10px" class="noclick">Filename: <input type="text" class="filename" placeholder="mymodel.json"/></label>
+            <button type="button" class="btn btn-default" id="ok" >Ok</button>
+            <button type="button" class="btn btn-default" id="cancel">Cancel</button>
+          </div>
+          <!-- Second menu for messaging -->
+          <div class="popr_content noclick" id="second">
+            <label id="message"></label>
+            <button type="button" class="btn btn-default" id="ok" style="visibility:hidden">Ok</button>
+          </div>
+        </script>
+
+        <div class="box">
         </div>
 
       </div><!-- /.container -->

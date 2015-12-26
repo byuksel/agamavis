@@ -19,7 +19,8 @@ models.Editor = Backbone.Model.extend({
     ADD_HEX_TEMPLATE: 6,
     CLEAR: 7,
     ADD_PATTERNLINE: 8,
-    UPLOAD_JSON: 9
+    UPLOAD_JSON: 9,
+    DOWNLOAD_JSON: 10
   },
   DesignEnum : {
     CONSTRUCTION: 0,
@@ -28,7 +29,8 @@ models.Editor = Backbone.Model.extend({
   defaults: {
     state: null,
     designstate: null,
-    json: null
+    json: null,
+    filename: null
   },
   initialize: function() {
     this.set('state', this.StateEnum.NOTHING);
@@ -70,7 +72,9 @@ models.SaveFilenameModel = Backbone.Model.extend({
   defaults: {
     speed        : 200,
     mode         : 'bottom',
-    isVisible : false
+    isVisible : false,
+    filename: null,
+    canSave: null
   }
 });
 

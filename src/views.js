@@ -242,6 +242,14 @@ views.EditorView = Backbone.View.extend({
       this.model.set('state', this.StateEnum.NOTHING);
       this.model.set('json', null);
     }
+    if (this.model.get('state') === this.StateEnum.DOWNLOAD_JSON) {
+      this.paper.remove();
+      this.paper =  this.Agama.fromJSON(this.model.get('json'), 'outgraph');
+      this.paper.setSize(this.winInfo.width, this.winInfo.height);
+      this.freshTile(this.winInfo);
+      this.model.set('state', this.StateEnum.NOTHING);
+      this.model.set('json', null);
+    }
     if (this.model.get('state') === this.StateEnum.CLEAR) {
       this.paper.clear();
       this.freshTile(this.winInfo);
@@ -383,22 +391,17 @@ views.SaveView = Backbone.View.extend({
   historyCollection: null,
   events: {
     'change #fileUpload': 'upload',
-    'change #fileDownload': 'download',
     'click .btn-download': 'downloadButton',
     'click .btn-upload': 'uploadButton',
   },
   initialize: function(options) {
     this.historyCollection = options.historyCollection;
+    this.saveFilenameModel = options.saveFilenameModel;
     if (window.File && window.FileReader &&
         window.FileList && window.Blob) {
       this.isFileAPIAvailable = true;
     };
     this.render();
-  },
-  download: function(event) {
-    console.log(event.target);
-    // files is a FileList of File objects. List some properties.
-    console.log(output);
   },
   upload: function(event) {
     console.log('upload is clicked');
@@ -432,7 +435,9 @@ views.SaveView = Backbone.View.extend({
   },
   downloadButton: function(event) {
     console.log('downloadButton is clicked');
-  
+    if (this.saveFilenameModel.get('canSave')) {
+      console.log(this.saveFilenameModel.get('filename'));
+    }
   },
   uploadButton: function(event) {
     
@@ -453,6 +458,7 @@ views.SaveFilenameView = Backbone.View.extend({
   },
   initialize: function(options) {
     this.popr_cont = '.popr_container_' + this.model.get('mode');
+    this.historyCollection = options.historyCollection;
     this.render();
   },
   render: function() {
@@ -470,7 +476,7 @@ views.SaveFilenameView = Backbone.View.extend({
         
     $(popr_cont).css('margin-left', m_l + 'px');
 
-    $(popr_cont).find('.noclicklabel').click(function(event) {
+    $(popr_cont).find('.noclick').click(function(event) {
       event.stopPropagation();
     });
     $(popr_cont).hide();
@@ -478,12 +484,13 @@ views.SaveFilenameView = Backbone.View.extend({
   clickOnMain: function(event) {
     if (!this.model.get('isVisible'))  {
       this.model.set('isVisible', true);
+      this.model.set('canSave', false);
       this.$el.find('.popr_content#second').css('z-index', -1);
       $(this.popr_cont).fadeIn(this.model.get('speed'));
     } else {
       this.model.set('isVisible', false);
       if (this.model.get('delay') === true) {
-        $(this.popr_cont).delay(500).fadeOut(200);
+        $(this.popr_cont).delay(1000).fadeOut(50);
         this.model.set('delay', false);
       } else {
         $(this.popr_cont).hide();
@@ -498,13 +505,25 @@ views.SaveFilenameView = Backbone.View.extend({
   },
   clickOk: function() {
     this.model.set('delay', true);
-    this.$el.find('.popr_content #message').text('DID IT!');
+    var filename = this.$el.find('.filename').val();
+    var message = 'Saved to ' + filename;
+    var canSave = true;
+    if (filename.length === 0) {
+      message = 'Did not save. Empty filename.';
+      canSave = false;
+    }
+    this.historyCollection.add([{actionTag: message}]);      
+    this.$el.find('.popr_content #message').text(message);
     this.$el.find('.popr_content#second').css('z-index', 10);
-    console.log(this.$el.find('.popr_content#second').html());
-    this.model.set('filename', this.$el.find('.filename').val());
+    if (canSave) {
+      this.model.set('filename', this.$el.find('.filename').val());
+      this.model.set('canSave', true);
+    }
   },
   clickCancel: function() {
     this.model.set('delay', true);
+    this.$el.find('.popr_content #message').text('Cancelled!');
+    this.$el.find('.popr_content#second').css('z-index', 10);
     this.$el.find('.filename').val(this.model.get('filename'));
   }
 });
